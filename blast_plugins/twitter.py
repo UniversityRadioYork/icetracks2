@@ -1,6 +1,6 @@
 #! /usr/bin/env python3
-
-from typing import Dict, Optional, Union
+'''Tweetbot plugin, pushes the current playing track to a twitter handle near you! Originally by Colin Roit.'''
+from typing import Optional
 from api import NowPlaying, Track
 from blaster import BlastPlugin
 import configparser
