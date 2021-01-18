@@ -10,6 +10,7 @@ class TwitterBot(BlastPlugin):
     last_playing: Optional[NowPlaying]
     config: configparser.SectionProxy
     twitter_api: tweepy.API
+    enabled: bool = True
 
     def __init__(self):
         # Pull in some config
@@ -29,9 +30,12 @@ class TwitterBot(BlastPlugin):
             self.last_playing = None
             self.poke_track(None)
         else:
-            raise Exception("Config for Twitter is missing.")
+            self.enabled = False
+            print("Config for Twitter is missing.")
 
     def poke_track(self, now_playing: Optional[NowPlaying]):
+        if not self.enabled:
+            return
 
         emoji = '🎵'
 

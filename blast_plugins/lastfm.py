@@ -10,6 +10,7 @@ class LastFM(BlastPlugin):
   last_playing: Optional[NowPlaying]
   config: configparser.SectionProxy
   api: pylast.LastFMNetwork
+  enabled: bool = True
 
   def __init__(self):
     # Pull in some config
@@ -29,9 +30,13 @@ class LastFM(BlastPlugin):
 
       self.poke_track(None)
     else:
-      raise Exception("Config for LastFM is missing.")
+      self.enabled = False
+      print("Config for LastFM is missing.")
 
   def poke_track(self, now_playing: Optional[NowPlaying]):
+    if not self.enabled:
+      return
+
     if (now_playing != self.last_playing):
       # Scrobble self.last_playing
       if self.last_playing:

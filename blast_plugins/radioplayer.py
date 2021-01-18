@@ -15,6 +15,7 @@ def get_sec(time_str: str):
 class Radioplayer(BlastPlugin):
   last_playing: Optional[NowPlaying]
   config: configparser.SectionProxy
+  enabled: bool = True
 
   def __init__(self):
     # Pull in some config
@@ -27,7 +28,8 @@ class Radioplayer(BlastPlugin):
 
       self.poke_track(None)
     else:
-      raise Exception("Config for Radioplayer is missing.")
+      self.enabled = False
+      print("Config for Radioplayer is missing.")
 
   def poke_track(self, now_playing: Optional[NowPlaying]):
     """
@@ -54,7 +56,8 @@ class Radioplayer(BlastPlugin):
     "https://ingest.radioplayer.co.uk/ingestor/metadata/v1/np/"
     """
 
-
+    if not self.enabled:
+      return
 
     if (now_playing != self.last_playing):
       print("RadioPlayer: Now Playing:", now_playing)
