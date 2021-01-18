@@ -47,5 +47,9 @@ class TwitterBot(BlastPlugin):
                 # Tweet
                 songText = track['title'] + ' - ' + track['artist']
                 tweet = emoji*2 + ' NOW PLAYING: ' + songText + ' ' + emoji*2
-                self.twitter_api.update_status(tweet)
+                try:
+                    self.twitter_api.update_status(tweet)
+                except tweepy.TweepError as e:
+                    # Catch stuff like Duplicate Tweets etc.
+                    print("ERROR: ", e)
             self.last_playing = now_playing
