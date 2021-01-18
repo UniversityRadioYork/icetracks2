@@ -26,4 +26,8 @@ class IceCast():
       url,
       auth = self.auth
     )
-    print(r)
+    if r.status_code != 200:
+      print("Icecast: Failed to update.\r\nStatus code: {}\r\nURL: {}".format(
+        r.status_code,
+        url
+      ))
