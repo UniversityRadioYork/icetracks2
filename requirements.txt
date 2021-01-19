@@ -1,3 +1,4 @@
 gql
 pylast
 tweepy
+typing_extensions
