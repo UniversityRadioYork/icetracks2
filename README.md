@@ -8,6 +8,7 @@ Currently, these services are:
 - Icecast
 - RadioPlayer
 - LastFM
+- Twitter ([@URYNowPlaying](https://twitter.com/urynowplaying))
 
 ## How to run it?
 
