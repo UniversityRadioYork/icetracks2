@@ -29,21 +29,29 @@ class IceTracks():
 
   def loop(self):
     while True:
+      try:
+        # Push default now playing API output to all configured icecast mounts.
+        nowPlaying = self.api.getNowPlaying()
 
-      # Push default now playing API output to all configured icecast mounts.
-      nowPlaying = self.api.getNowPlaying()
+        self.blaster.blast_track(nowPlaying)
 
-      self.blaster.blast_track(nowPlaying)
-
-      print("Live is Playing: ", nowPlaying)
-      for mount in self.mounts:
-        self.ice.poke_mount(mount, nowPlaying)
+        print("Live is Playing: ", nowPlaying)
+        for mount in self.mounts:
+          self.ice.poke_mount(mount, nowPlaying)
 
 
-      # Now for currently hardcoded source -> mount mappings.
-      jukebox = self.api.getNowPlaying(sources=[Source.j], allow_off_air=True)
-      print("\nJukebox is Playing: ", jukebox)
-      self.ice.poke_mount("jukebox", jukebox)
+        # Now for currently hardcoded source -> mount mappings.
+        jukebox = self.api.getNowPlaying(sources=[Source.j], allow_off_air=True)
+        print("\nJukebox is Playing: ", jukebox)
+        self.ice.poke_mount("jukebox", jukebox)
+
+        webstudio = self.api.getNowPlaying(sources=[Source.w], allow_off_air=True)
+        print("\nWebstudio is Playing: ", webstudio)
+        self.ice.poke_mount("webstudio", webstudio)
+
+      # General Catch All. Ideally we never crash, rather just ignore updates caused by exceptions
+      except Exception as e:
+        print("Failure, will try again in next loop. Exception: ", e)
 
       time.sleep(15)
       print("\n")
