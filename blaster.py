@@ -7,6 +7,8 @@ import sys
 import importlib
 import inspect
 import pkgutil
+import os
+import configparser
 
 import blast_plugins
 
@@ -25,6 +27,16 @@ class BlastPlugin():
   def poke_track(self, now_playing: Optional[NowPlaying]):
     '''Send new track info to service.'''
     return None
+
+  def get_config(self, section_name: str) -> Optional[configparser.SectionProxy]:
+
+    config = configparser.ConfigParser()
+    config.read(os.path.dirname(os.path.realpath(__file__)) + '/config.ini')
+    if section_name in config:
+      return config[section_name]
+    else:
+      print("Config for {} is missing.".format(section_name))
+      return None
 
 
 class Blaster():

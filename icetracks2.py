@@ -1,11 +1,12 @@
 #! /usr/bin/env python3
 '''Main loop for Icetracks 2, codenamed Iceblaster'''
 import time
-from typing import List, Optional
+from typing import List
 from api import API, Source
 from blaster import Blaster
 from ice import IceCast
 import configparser
+import os
 
 class IceTracks():
 
@@ -18,7 +19,7 @@ class IceTracks():
   def __init__(self):
     # Pull in some config
     config = configparser.ConfigParser()
-    config.read('config.ini')
+    config.read(os.path.dirname(os.path.realpath(__file__)) + '/config.ini')
     self.mounts = config["icecast"]["mounts"].replace(" ", "").split(",")
 
     self.api = API(url = config["myradio"]["url"], api_key=config["myradio"]["api_key"])

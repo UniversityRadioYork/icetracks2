@@ -14,22 +14,18 @@ def get_sec(time_str: str):
 
 class Radioplayer(BlastPlugin):
   last_playing: Optional[NowPlaying]
-  config: configparser.SectionProxy
+  config: Optional[configparser.SectionProxy]
   enabled: bool = True
 
   def __init__(self):
     # Pull in some config
-    config = configparser.ConfigParser()
-    config.read('config.ini')
-    if "radioplayer" in config:
-      self.config = config['radioplayer']
-
+    self.config = self.get_config('radioplayer')
+    if self.config:
       self.last_playing = None
 
       self.poke_track(None)
     else:
       self.enabled = False
-      print("Config for Radioplayer is missing.")
 
   def poke_track(self, now_playing: Optional[NowPlaying]):
     """

@@ -8,16 +8,14 @@ import tweepy
 
 class TwitterBot(BlastPlugin):
     last_playing: Optional[NowPlaying]
-    config: configparser.SectionProxy
+    config: Optional[configparser.SectionProxy]
     twitter_api: tweepy.API
     enabled: bool = True
 
     def __init__(self):
         # Pull in some config
-        config = configparser.ConfigParser()
-        config.read('config.ini')
-        if "twitter" in config:
-            self.config = config['twitter']
+        self.config = self.get_config('twitter')
+        if self.config:
             auth = tweepy.OAuthHandler(
                 self.config['consumer_key'],
                 self.config['consumer_secret']
@@ -31,7 +29,6 @@ class TwitterBot(BlastPlugin):
             self.poke_track(None)
         else:
             self.enabled = False
-            print("Config for Twitter is missing.")
 
     def poke_track(self, now_playing: Optional[NowPlaying]):
         if not self.enabled:

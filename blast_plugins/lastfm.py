@@ -8,16 +8,14 @@ import configparser
 
 class LastFM(BlastPlugin):
   last_playing: Optional[NowPlaying]
-  config: configparser.SectionProxy
+  config: Optional[configparser.SectionProxy]
   api: pylast.LastFMNetwork
   enabled: bool = True
 
   def __init__(self):
     # Pull in some config
-    config = configparser.ConfigParser()
-    config.read('config.ini')
-    if "lastfm" in config:
-      self.config = config['lastfm']
+    self.config = self.get_config('lastfm')
+    if self.config:
 
       self.api = pylast.LastFMNetwork(
         api_key=self.config["api_key"],
@@ -31,7 +29,6 @@ class LastFM(BlastPlugin):
       self.poke_track(None)
     else:
       self.enabled = False
-      print("Config for LastFM is missing.")
 
   def poke_track(self, now_playing: Optional[NowPlaying]):
     if not self.enabled:
