@@ -4,13 +4,10 @@ from typing import Optional
 from api import NowPlaying, Track
 from blaster import BlastPlugin
 import pylast
-import configparser
 
 class LastFM(BlastPlugin):
-  last_playing: Optional[NowPlaying]
-  config: Optional[configparser.SectionProxy]
+
   api: pylast.LastFMNetwork
-  enabled: bool = True
 
   def __init__(self):
     # Pull in some config

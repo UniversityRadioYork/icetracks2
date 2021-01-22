@@ -5,17 +5,16 @@ from typing import Dict, Optional, Union
 from api import NowPlaying, Track
 from blaster import BlastPlugin
 import requests
-import configparser
 
-def get_sec(time_str: str):
+def get_sec(time_str: Optional[str]):
     """Get Seconds from time."""
-    h, m, s = time_str.split(':')
-    return int(h) * 3600 + int(m) * 60 + int(s)
+    if time_str:
+      h, m, s = time_str.split(':')
+      return int(h) * 3600 + int(m) * 60 + int(s)
+    else:
+      return 0
 
 class Radioplayer(BlastPlugin):
-  last_playing: Optional[NowPlaying]
-  config: Optional[configparser.SectionProxy]
-  enabled: bool = True
 
   def __init__(self):
     # Pull in some config
@@ -73,7 +72,7 @@ class Radioplayer(BlastPlugin):
         data: Dict[str, Union[str, int]] = {
             "rpId": self.config["rpId"],
             "startTime": start_time,
-            "duration": 180, ## Currently manual because the GraphQL API is incorrect.
+            "duration": get_sec(track["length"]),
             "title": track["title"],
             "artist": track["artist"]
         }

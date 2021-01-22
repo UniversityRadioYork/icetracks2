@@ -21,6 +21,10 @@ def iter_namespace(ns_pkg):
     return pkgutil.iter_modules(ns_pkg.__path__, ns_pkg.__name__ + ".")
 
 class BlastPlugin():
+  enabled: bool = True
+  last_playing: Optional[NowPlaying]
+  config: Optional[configparser.SectionProxy]
+
   def __init__(self):
     return None
 
