@@ -7,6 +7,7 @@ It takes URY MyRadio's Now Playing API and blasts track-shaped metadata to vario
 Currently, these services are:
 - Icecast
 - RadioPlayer
+- Tunein
 - LastFM
 - Twitter ([@URYNowPlaying](https://twitter.com/urynowplaying))
 

@@ -53,6 +53,7 @@ class TuneIn(BlastPlugin):
         data: Dict[str, str] = {
           "partnerId": self.config["partnerId"],
           "partnerKey": self.config["partnerKey"],
+          "id": self.config["stationId"],
           "commercial": "false"
         }
         if track:
