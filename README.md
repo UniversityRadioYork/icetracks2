@@ -21,6 +21,6 @@ It will want Python3 of some description. Tested on 3.7.
 
 3. Run `python3 ./icetracks2.py`
 
-A systemd service and env instructions will follow soon.
+A systemd service is provided. Env instructions will follow soon.
 
 
