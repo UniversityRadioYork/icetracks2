@@ -1,0 +1,13 @@
+[Unit]
+Description=Icetracks 2 (Iceblaster)
+After=network.target
+
+[Service]
+Type=simple
+Restart=always
+ExecStart=python3 -u /usr/local/icetracks2/icetracks2.py
+StandardOutput=file:/var/log/icetracks2.log
+StandardError=file:/var/log/icetracks2.error.log
+
+[Install]
+WantedBy=multi-user.target
