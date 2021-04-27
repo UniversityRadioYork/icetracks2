@@ -19,8 +19,8 @@ class IceCast():
     if now_playing:
       track = now_playing["track"]
 
-    title = "" if not track else track["title"]
-    artist = "" if not track else track["artist"]
+    title = "URY" if not track else track["title"]
+    artist = " " if not track else track["artist"]
     url = "{}/admin/metadata?mount=/{}&mode=updinfo&title={}&artist={}".format(self.url, mount, title, artist)
     r = requests.get(
       url,
