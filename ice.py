@@ -4,6 +4,7 @@
 from typing import Optional, Tuple
 from api import NowPlaying, Track
 import requests
+from urllib.parse import urlencode, quote_plus
 
 
 class IceCast():
