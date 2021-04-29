@@ -21,7 +21,13 @@ class IceCast():
 
     title = "URY" if not track else track["title"]
     artist = " " if not track else track["artist"]
-    url = "{}/admin/metadata?mount=/{}&mode=updinfo&title={}&artist={}".format(self.url, mount, title, artist)
+    params = {
+        'title': title,
+        'artist': arist,
+        'mode': "updinfo"
+    }
+    encoded = urlencode(params, quote_via=quote_plus)
+    url = "{}/admin/metadata?mount=/{}{}".format(self.url, mount, encoded)
     r = requests.get(
       url,
       auth = self.auth
