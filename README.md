@@ -6,9 +6,9 @@ It takes URY MyRadio's Now Playing API and blasts track-shaped metadata to vario
 
 Currently, these services are:
 - Icecast
-- RadioPlayer
-- Tunein
-- LastFM
+- RadioPlayer (Mobile App)
+- [TuneIn](https://tunein.com/radio/University-Radio-York-(URY)-1350-s37310/)
+- [LastFM](https://www.last.fm/user/ury1350)
 - Twitter ([@URYNowPlaying](https://twitter.com/urynowplaying))
 
 ## How to run it?
@@ -22,5 +22,3 @@ It will want Python3 of some description. Tested on 3.7.
 3. Run `python3 ./icetracks2.py`
 
 A systemd service is provided. Env instructions will follow soon.
-
-
