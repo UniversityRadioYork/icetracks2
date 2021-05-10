@@ -1,7 +1,7 @@
 #! /usr/bin/env python3
 '''Handles sending track updates to other services, split from ice.py for a cheap joke.'''
 
-from api import NowPlaying
+from api import NowPlaying, Timeslot
 from typing import Any, List, Optional
 import sys
 import importlib
@@ -30,6 +30,10 @@ class BlastPlugin():
 
   def poke_track(self, now_playing: Optional[NowPlaying]):
     '''Send new track info to service.'''
+    return None
+
+  def poke_show(self, timeslot: Optional[Timeslot]):
+    '''Send new show info to service.'''
     return None
 
   def get_config(self, section_name: str) -> Optional[configparser.SectionProxy]:
@@ -68,10 +72,11 @@ class Blaster():
 
 
 
-  def blast_track(self, now_playing: Optional[NowPlaying]):
+  def blast(self, now_playing: Optional[NowPlaying], current_show: Optional[Timeslot]):
     '''Fire track-shaped iceblasts to registered service plugins.'''
 
     for plugin in self.plugins:
       plugin.poke_track(now_playing)
+      plugin.poke_show(current_show)
 
 

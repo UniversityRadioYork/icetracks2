@@ -6,6 +6,7 @@ from api import NowPlaying, Track
 import requests
 from urllib.parse import urlencode, quote_plus
 
+from urllib.parse import urlencode, quote_plus
 
 class IceCast():
   url: str

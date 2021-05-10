@@ -1,10 +1,10 @@
 #! /usr/bin/env python3
-'''Tweetbot plugin, pushes the current playing track to a twitter handle near you! Originally by Colin Roit.'''
+'''Tweetbot plugin, pushes the current playing track to a twitter handle near you! Originally by Colin Roitt.'''
 from typing import Optional
-from api import NowPlaying, Track
+from api import NowPlaying, Timeslot, Track
 from blaster import BlastPlugin
 import tweepy
-
+import random
 class TwitterBot(BlastPlugin):
 
     twitter_api: tweepy.API
@@ -12,6 +12,7 @@ class TwitterBot(BlastPlugin):
     def __init__(self):
         # Pull in some config
         self.config = self.get_config('twitter')
+        self.general_config = self.get_config('general')
         if self.config:
             auth = tweepy.OAuthHandler(
                 self.config['consumer_key'],
@@ -23,6 +24,8 @@ class TwitterBot(BlastPlugin):
             )
             self.twitter_api = tweepy.API(auth)
             self.last_playing = None
+            self.last_show = None
+            self.poke_show(None)
             self.poke_track(None)
         else:
             self.enabled = False
@@ -47,3 +50,28 @@ class TwitterBot(BlastPlugin):
                     # Catch stuff like Duplicate Tweets etc.
                     print("ERROR: ", e)
             self.last_playing = now_playing
+
+    def poke_show(self, timeslot: Optional[Timeslot]):
+        if not self.enabled:
+            return
+
+        short_name = self.general_config["short_name"]
+        intros = ["Coming up now on {}:".format(short_name), "Listen now on {} for ".format(short_name), "Listen live NOW for "]
+        emojis = ['🎤','🎧','📻']
+
+        rand = random.randrange(0, len(emojis))
+        intro = intros[rand]
+        emoji = emojis[rand]
+
+
+        if (timeslot != self.last_show):
+            self.last_show = timeslot
+            print("TIMESLOT:",str(timeslot))
+            if (timeslot and timeslot["realShow"]):
+                url: str = timeslot["webpage"] if "webpage" in timeslot else ""
+                tweet: str = '{} {}{} {}\n{}'.format(emoji*2, intro, timeslot["title"], emoji*2, url)
+                try:
+                    self.twitter_api.update_status(tweet)
+                except tweepy.TweepError as e:
+                    # Catch stuff like Duplicate Tweets etc.
+                    print("ERROR: ", e)
