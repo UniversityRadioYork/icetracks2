@@ -22,7 +22,7 @@ class IceTracks():
     config.read(os.path.dirname(os.path.realpath(__file__)) + '/config.ini')
     self.mounts = config["icecast"]["mounts"].replace(" ", "").split(",")
 
-    self.api = API(url = config["myradio"]["url"], api_key=config["myradio"]["api_key"])
+    self.api = API(url_base = config["myradio"]["url_base"], url = config["myradio"]["url"], api_key=config["myradio"]["api_key"])
     self.blaster = Blaster()
     self.ice = IceCast(url = config["icecast"]["url"], auth=(config["icecast"]["user"], config["icecast"]["pass"]))
     print("Welcome to IceTracks!")
@@ -33,8 +33,9 @@ class IceTracks():
       try:
         # Push default now playing API output to all configured icecast mounts.
         nowPlaying = self.api.getNowPlaying()
+        currentShow = self.api.getCurrentShow()
 
-        self.blaster.blast_track(nowPlaying)
+        self.blaster.blast(nowPlaying, currentShow)
 
         print("Live is Playing: ", nowPlaying)
         for mount in self.mounts:

@@ -16,7 +16,7 @@ class Source(Enum):
   m = "Manual",
   o = "Other",
   s = "Sequencer",
-  w = "WebStudio"
+  w = "WebStudio",
 
   def __repr__(self) -> str:
       return '"' + self.name + '"'
@@ -30,18 +30,26 @@ class NowPlaying(TypedDict):
   start_time: int
   track: Track
 
+class Timeslot(TypedDict):
+  title: str
+  photo: Optional[str]
+  startTime: int
+  endTime: str
+  realShow: bool
 class API():
 
   transport: RequestsHTTPTransport
   client: Client
 
-  def __init__(self, url: str, api_key: str):
+  def __init__(self, url_base: str, url: str, api_key: str):
 
     # Select your transport with a defined url endpoint
     self.transport = RequestsHTTPTransport(url + "?api_key=" + api_key)
 
     # Create a GraphQL client using the defined transport
     self.client = Client(transport=self.transport, fetch_schema_from_transport=True)
+
+    self.url_base = url_base
 
   def getNowPlaying(self, sources: Optional[List[Source]] = None, allow_off_air: Optional[bool] = None) -> Optional[NowPlaying]:
 
@@ -94,4 +102,42 @@ class API():
           "track": track
         }
         return nowPlaying
+    return None
+
+  def getCurrentShow(self):
+    query = gql(
+      '''
+        query {
+            currentAndNext {
+                current {
+                  ... on Timeslot {
+                    title
+                    photo
+                    startTime
+                    endTime
+                    webpage
+                    id
+                  }
+                }
+              }
+        }
+      '''
+    )
+    response = self.client.execute(query)
+    if "current" in response and response["current"]:
+      endTime: int = -1
+      try:
+        endTime: int = int(datetime.datetime.fromisoformat(response["nowPlaying"]["endTime"]).timestamp())
+      except:
+        pass
+
+      current_show: Timeslot = {
+        "title": str(response["title"]),
+        "photo": self.url_base + str(response["photo"]),
+        "startTime": int(datetime.datetime.fromisoformat(response["nowPlaying"]["startTime"]).timestamp()),
+        "endTime": endTime,
+        "webpage": self.url_base + response["webpage"] if "webpage" in response else None,
+        "realShow": "id" in response
+      }
+      return current_show
     return None
