@@ -57,16 +57,18 @@ class TwitterBot(BlastPlugin):
 
         short_name = self.general_config["short_name"]
         intros = ["Coming up now on {}:".format(short_name), "Listen now on {} for ".format(short_name), "Listen live NOW for "]
-        emojis = ['🎤','🎧','📻','🎙']
+        emojis = ['🎤','🎧','📻']
 
         rand = random.randrange(0, len(emojis))
         intro = intros[rand]
         emoji = emojis[rand]
 
 
-        if (timeslot != self.last_show and timeslot):
-            if (timeslot["realShow"]):
-                url: str = timeslot["url"] if "url" in timeslot else ""
+        if (timeslot != self.last_show):
+            self.last_show = timeslot
+            print("TIMESLOT:",str(timeslot))
+            if (timeslot and timeslot["realShow"]):
+                url: str = timeslot["webpage"] if "webpage" in timeslot else ""
                 tweet: str = '{} {}{} {}\n{}'.format(emoji*2, intro, timeslot["title"], emoji*2, url)
                 try:
                     self.twitter_api.update_status(tweet)

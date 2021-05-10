@@ -124,7 +124,8 @@ class API():
       '''
     )
     response = self.client.execute(query)
-    if "current" in response and response["current"]:
+    if "currentAndNext" in response and response["currentAndNext"]["current"]:
+      current = response["currentAndNext"]["current"]
       endTime: int = -1
       try:
         endTime: int = int(datetime.datetime.fromisoformat(response["nowPlaying"]["endTime"]).timestamp())
@@ -132,12 +133,12 @@ class API():
         pass
 
       current_show: Timeslot = {
-        "title": str(response["title"]),
-        "photo": self.url_base + str(response["photo"]),
-        "startTime": int(datetime.datetime.fromisoformat(response["nowPlaying"]["startTime"]).timestamp()),
+        "title": str(current["title"]),
+        "photo": self.url_base + str(current["photo"]),
+        "startTime": int(datetime.datetime.fromisoformat(current["startTime"]).timestamp()),
         "endTime": endTime,
-        "webpage": self.url_base + response["webpage"] if "webpage" in response else None,
-        "realShow": "id" in response
+        "webpage": self.url_base + current["webpage"] if "webpage" in current else None,
+        "realShow": "id" in current
       }
       return current_show
     return None

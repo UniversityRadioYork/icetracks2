@@ -31,9 +31,11 @@ class IceTracks():
   def loop(self):
     while True:
       try:
+        print("--- Loop ---")
         # Push default now playing API output to all configured icecast mounts.
         nowPlaying = self.api.getNowPlaying()
         currentShow = self.api.getCurrentShow()
+        print("Timeslot is: ", currentShow)
 
         self.blaster.blast(nowPlaying, currentShow)
 

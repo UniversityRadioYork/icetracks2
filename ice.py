@@ -5,6 +5,7 @@ from typing import Optional, Tuple
 from api import NowPlaying, Track
 import requests
 
+from urllib.parse import urlencode, quote_plus
 
 class IceCast():
   url: str
@@ -19,9 +20,15 @@ class IceCast():
     if now_playing:
       track = now_playing["track"]
 
-    title = "" if not track else track["title"]
-    artist = "" if not track else track["artist"]
-    url = "{}/admin/metadata?mount=/{}&mode=updinfo&title={}&artist={}".format(self.url, mount, title, artist)
+    title = "URY" if not track else track["title"]
+    artist = " " if not track else track["artist"]
+    params = {
+        'title': title,
+        'artist': artist,
+        'mode': "updinfo"
+    }
+    result = urlencode(params, quote_via=quote_plus)
+    url = "{}/admin/metadata?mount=/{}&{}".format(self.url, mount, result)
     r = requests.get(
       url,
       auth = self.auth
