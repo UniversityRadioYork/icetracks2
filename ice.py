@@ -4,6 +4,7 @@
 from typing import Optional, Tuple
 from api import NowPlaying, Track
 import requests
+from urllib.parse import urlencode, quote_plus
 
 from urllib.parse import urlencode, quote_plus
 
@@ -24,11 +25,11 @@ class IceCast():
     artist = " " if not track else track["artist"]
     params = {
         'title': title,
-        'artist': artist,
+        'artist': arist,
         'mode': "updinfo"
     }
-    result = urlencode(params, quote_via=quote_plus)
-    url = "{}/admin/metadata?mount=/{}&{}".format(self.url, mount, result)
+    encoded = urlencode(params, quote_via=quote_plus)
+    url = "{}/admin/metadata?mount=/{}{}".format(self.url, mount, encoded)
     r = requests.get(
       url,
       auth = self.auth
