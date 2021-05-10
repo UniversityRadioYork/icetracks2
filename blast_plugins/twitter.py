@@ -1,5 +1,5 @@
 #! /usr/bin/env python3
-'''Tweetbot plugin, pushes the current playing track to a twitter handle near you! Originally by Colin Roit.'''
+'''Tweetbot plugin, pushes the current playing track to a twitter handle near you! Originally by Colin Roitt.'''
 from typing import Optional
 from api import NowPlaying, Timeslot, Track
 from blaster import BlastPlugin
