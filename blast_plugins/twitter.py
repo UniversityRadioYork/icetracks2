@@ -56,7 +56,7 @@ class TwitterBot(BlastPlugin):
             return
 
         short_name = self.general_config["short_name"]
-        intros = ["Coming up now on {}:".format(short_name), "Listen now on {} for ".format(short_name), "Listen live NOW for "]
+        intros = ["Coming up now on {}: ".format(short_name), "Listen now on {} for ".format(short_name), "Listen live NOW for "]
         emojis = ['🎤','🎧','📻']
 
         rand = random.randrange(0, len(emojis))
@@ -69,7 +69,7 @@ class TwitterBot(BlastPlugin):
             print("TIMESLOT:",str(timeslot))
             if (timeslot and timeslot["realShow"]):
                 url: str = timeslot["webpage"] if "webpage" in timeslot else ""
-                tweet: str = '{} {}{} {}\n{}'.format(emoji*2, intro, timeslot["title"], emoji*2, url)
+                tweet: str = '{} {}{}! {}\n{}'.format(emoji*2, intro, timeslot["title"], emoji*2, url)
                 try:
                     self.twitter_api.update_status(tweet)
                 except tweepy.TweepError as e:
