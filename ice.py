@@ -29,7 +29,7 @@ class IceCast():
         'mode': "updinfo"
     }
     encoded = urlencode(params, quote_via=quote_plus)
-    url = "{}/admin/metadata?mount=/{}{}".format(self.url, mount, encoded)
+    url = "{}/admin/metadata?mount=/{}&{}".format(self.url, mount, encoded)
     r = requests.get(
       url,
       auth = self.auth
