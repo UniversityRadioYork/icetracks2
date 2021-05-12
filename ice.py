@@ -25,7 +25,7 @@ class IceCast():
     artist = " " if not track else track["artist"]
     params = {
         'title': title,
-        'artist': arist,
+        'artist': artist,
         'mode': "updinfo"
     }
     encoded = urlencode(params, quote_via=quote_plus)
