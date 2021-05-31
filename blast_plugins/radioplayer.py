@@ -68,7 +68,8 @@ class Radioplayer(BlastPlugin):
           }
         url = "https://ingest.radioplayer.co.uk/ingestor/metadata/v1/np/"
         auth = (self.config["user"], self.config["pass"])
-        start_time = datetime.datetime.fromtimestamp(now_playing["start_time"]).isoformat()
+        # Radioplayer wants UTC. Let's give it to 'em.
+        start_time = datetime.datetime.utcfromtimestamp(now_playing["start_time"]).isoformat()
         data: Dict[str, Union[str, int]] = {
             "rpId": self.config["rpId"],
             "startTime": start_time,
