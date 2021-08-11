@@ -2,7 +2,7 @@
 
 import datetime
 from typing import Dict, Optional, Union
-from api import NowPlaying, Track
+from api import Timeslot, NowPlaying, Track
 from blaster import BlastPlugin
 import requests
 
@@ -20,11 +20,18 @@ class Radioplayer(BlastPlugin):
     # Pull in some config
     self.config = self.get_config('radioplayer')
     if self.config:
+      self.last_show = None
       self.last_playing = None
 
       self.poke_track(None)
     else:
       self.enabled = False
+
+  def poke_show(self, timeslot: Optional[Timeslot]):
+    if not self.enabled:
+      return
+    if (timeslot != self.last_show):
+      self.last_show = timeslot
 
   def poke_track(self, now_playing: Optional[NowPlaying]):
     """
@@ -56,34 +63,41 @@ class Radioplayer(BlastPlugin):
 
     if (now_playing != self.last_playing):
       print("RadioPlayer: Now Playing:", now_playing)
-      track: Track
-      if now_playing:
-        if now_playing["track"] != None:
-          track = now_playing["track"]
-        else:
-          track = {
-            "title": "",
-            "artist": "",
-            "length": None
-          }
-        url = "https://ingest.radioplayer.co.uk/ingestor/metadata/v1/np/"
-        auth = (self.config["user"], self.config["pass"])
-        start_time = datetime.datetime.fromtimestamp(now_playing["start_time"]).isoformat()
-        data: Dict[str, Union[str, int]] = {
-            "rpId": self.config["rpId"],
-            "startTime": start_time,
-            "duration": get_sec(track["length"]),
-            "title": track["title"],
-            "artist": track["artist"]
+      track: Optional[Track]
+      if now_playing and now_playing["track"]:
+        track = now_playing["track"]
+      elif (self.last_show):
+        # Be a bit cheeky and send the current show over as a track.
+        track = {
+          "title": self.last_show["title"],
+          "artist": "URY",
+          "length": "00:03:00"
         }
-        r = requests.post(
-          url,
-          auth = auth,
-          data = data
-        )
-        if r.status_code != 202:
-          print("RadioPlayer: Failed to update.\r\nStatus code: {}\r\nData: {}".format(
-            r.status_code,
-            data
-          ))
+      else:
+        track = {
+          "title": "",
+          "artist": "",
+          "length": "00:00:00"
+        }
+      url = "https://ingest.radioplayer.co.uk/ingestor/metadata/v1/np/"
+      auth = (self.config["user"], self.config["pass"])
+      # Radioplayer wants UTC. Let's give to 'em.
+      start_time = datetime.datetime.utcfromtimestamp(now_playing["start_time"]).isoformat()
+      data: Dict[str, Union[str, int]] = {
+          "rpId": self.config["rpId"],
+          "startTime": start_time,
+          "duration": get_sec(track["length"]),
+          "title": track["title"],
+          "artist": track["artist"]
+      }
+      r = requests.post(
+        url,
+        auth = auth,
+        data = data
+      )
+      if r.status_code != 202:
+        print("RadioPlayer: Failed to update.\r\nStatus code: {}\r\nData: {}".format(
+          r.status_code,
+          data
+        ))
       self.last_playing = now_playing

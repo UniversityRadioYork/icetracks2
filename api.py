@@ -1,7 +1,7 @@
 #! /usr/bin/env python3
 '''Handles talking to the MyRadio API to get track info.'''
 
-from typing import List, Optional
+from typing import Any, Dict, List, Optional
 from gql import gql, Client
 from gql.transport.requests import RequestsHTTPTransport
 from enum import Enum
@@ -24,18 +24,19 @@ class Source(Enum):
 class Track(TypedDict):
   title: str
   artist: str
-  length: Optional[str]
+  length: str
 
 class NowPlaying(TypedDict):
   start_time: int
-  track: Track
+  track: Optional[Track]
 
 class Timeslot(TypedDict):
   title: str
   photo: Optional[str]
   startTime: int
-  endTime: str
+  endTime: int
   realShow: bool
+  webpage: Optional[str]
 class API():
 
   transport: RequestsHTTPTransport
@@ -53,17 +54,18 @@ class API():
 
   def getNowPlaying(self, sources: Optional[List[Source]] = None, allow_off_air: Optional[bool] = None) -> Optional[NowPlaying]:
 
-    params = []
+    params: List[str] = []
     if (sources):
       params.append("sources: " + str(sources))
 
     if (allow_off_air != None):
       params.append("allowOffAir: " + str(allow_off_air).lower())
 
+    param_str: str
     if (params):
-      params = "(" + ",".join(params) + ")"
+      param_str = "(" + ",".join(params) + ")"
     else:
-      params = ""
+      param_str = ""
 
     query = gql(
       '''
@@ -83,26 +85,32 @@ class API():
             }}
           }}
         }}
-      '''.format(params)
+      '''.format(param_str)
     )
 
     #try:
-    response: Optional[NowPlaying] = self.client.execute(query)
+    response: Optional[Dict[str,Any]] = self.client.execute(query)
     #except:
     #  raise # TODO: Log this.
     #  return None
 
-    if response != None:
-      if ("nowPlaying" in response and response["nowPlaying"]):
-        start_time: int = int(datetime.datetime.fromisoformat(response["nowPlaying"]["startTime"]).timestamp())
-        track: Track = response["nowPlaying"]["track"]
+    if response != None and "nowPlaying" in response and response["nowPlaying"]:
+      start_time: int = int(datetime.datetime.fromisoformat(response["nowPlaying"]["startTime"]).timestamp())
+      track: Track = response["nowPlaying"]["track"]
 
-        nowPlaying: NowPlaying = {
-          "start_time": start_time,
-          "track": track
-        }
-        return nowPlaying
-    return None
+      # A manual tracklist doesn't have a length,
+      # Just assume an average song length ish.
+      if "length" not in track:
+        track["length"] = "00:03:00"
+
+      nowPlaying: NowPlaying = {
+        "start_time": start_time,
+        "track": track
+      }
+      return nowPlaying
+    else:
+      # Nothing valid is playing.
+      return None
 
   def getCurrentShow(self):
     query = gql(
@@ -123,8 +131,8 @@ class API():
         }
       '''
     )
-    response = self.client.execute(query)
-    if "currentAndNext" in response and response["currentAndNext"]["current"]:
+    response: Optional[Dict[str,Any]] = self.client.execute(query)
+    if response and "currentAndNext" in response and response["currentAndNext"]["current"]:
       current = response["currentAndNext"]["current"]
       endTime: int = -1
       try:
