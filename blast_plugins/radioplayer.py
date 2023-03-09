@@ -32,9 +32,9 @@ class Radioplayer(BlastPlugin):
     The API also allows clients to submit a concise form of now­playing data that does not use an
     XML document to communicate the content.  Simple request parameters are used instead of an
     XML document.
-    https://ingest.radioplayer.co.uk/ingestor/metadata/v1/np/
+    https://np-ingest.radioplayer.cloud
     The request parameters are as follows
-      - rpId ­ the station’s Radioplayer Id
+      - rpuid ­ the station’s Radioplayer Id
       - startTime ­ the start time of the now playing data in ISO8601 format, UTC timezone
       - duration ­ the duration of the song in seconds
       - title ­ song title, max length 128 characters
@@ -46,9 +46,9 @@ class Radioplayer(BlastPlugin):
     A template example of how you could post this data using the commonly found 'curl' command
     line utility follows:
     curl -u yourusername:yourpassword -v --data
-    "rpId=YOUR_RPID&startTime=2013-10-01T08:27:00&duration=600&title=SONG
+    "rpuid=YOUR_RPID&startTime=2013-10-01T08:27:00&duration=600&title=SONG
     TITLE&artist=ARTIST" -X POST
-    "https://ingest.radioplayer.co.uk/ingestor/metadata/v1/np/"
+    "https://np-ingest.radioplayer.cloud/"
     """
 
     if not self.enabled:
@@ -66,12 +66,12 @@ class Radioplayer(BlastPlugin):
             "artist": "",
             "length": None
           }
-        url = "https://ingest.radioplayer.co.uk/ingestor/metadata/v1/np/"
+        url = "https://np-ingest.radioplayer.cloud/"
         auth = (self.config["user"], self.config["pass"])
         # Radioplayer wants UTC. Let's give it to 'em.
         start_time = datetime.datetime.utcfromtimestamp(now_playing["start_time"]).isoformat()
         data: Dict[str, Union[str, int]] = {
-            "rpId": self.config["rpId"],
+            "rpuid": self.config["rpuid"],
             "startTime": start_time,
             "duration": get_sec(track["length"]),
             "title": track["title"],
