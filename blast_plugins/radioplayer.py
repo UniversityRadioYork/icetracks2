@@ -80,7 +80,7 @@ class Radioplayer(BlastPlugin):
         r = requests.post(
           url,
           auth = auth,
-          data = data
+          params = data
         )
         if r.status_code != 202:
           print("RadioPlayer: Failed to update.\r\nStatus code: {}\r\nData: {}".format(
